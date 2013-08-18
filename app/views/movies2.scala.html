@@ -1,0 +1,149 @@
+@(user: IdentityUser, form: Form[Search])
+
+
+@*<!doctype html>*@
+@*<html>*@
+@*<head>*@
+
+    @*<title></title>*@
+
+    @*<meta charset="utf-8"/>*@
+    @*<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>*@
+    @*<meta name="viewport" content="width=device-width, initial-scale=1"/>*@
+
+    @*<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>*@
+    @*<link rel="stylesheet" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"/>*@
+    @*<link rel="stylesheet" href="@routes.Assets.at("stylesheets/movies.css")"/>*@
+    @*<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css" rel="stylesheet">*@
+    @*<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")"/>*@
+
+
+@*</head>*@
+
+@*<body>*@
+
+@main("Login") {
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <a class="navbar-brand" href="#">inkling</a>
+        <ul class="nav navbar-nav">
+
+           <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies("all")">Puntuar/Ver/Peliculas</a></li>
+           <li @if(session().get("set") == "seen"){class="active"}><a href="@routes.MovieController.movies("seen")">Mis puntuaciones</a></li>
+           @*<li @if(session().get("set") == "unseen"){class="active"}><a href="@routes.MovieController.movies("unseen")">No vistas(se desaparece)</a></li>*@
+           <li @if(session().get("set") == "unseen"){class="active"}><a href="#">Recomendaciones</a></li>
+
+        </ul>
+
+
+        <form class="navbar-form pull-left" action="@routes.MovieController.find()" method="post">
+            <input name="q" type="text" class="form-control" style="width: 200px;" value="@form("q").value"/>
+        </form>
+        <p class="navbar-text pull-right"> <span class="glyphicon glyphicon-user"></span> @user.firstName() <a href="/logout_" class="navbar-link">(Salir)</a></p>
+
+    </div>
+
+    <div class="container">
+	<div class="movies clearfix">
+	    <div class="span3">	</div>
+	    <div class="span3">	</div>
+	    <div class="span3">	</div>
+	    <div class="span3">	</div>
+	    <div class="span3">	</div>
+	</div>
+	<div id="loading" class="text-center"><img src="@routes.Assets.at("images/loading.gif")" /> </div>
+    </div>
+    <div id="movie-mask-ok" class="mask-ok hide"></div>
+
+    <script type="text/javascript" src="@routes.Application.javascriptRoutes()"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="@routes.Assets.at("javascripts/jquery.tmpl.min.js")"></script>
+    <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+
+    <script src="@routes.Assets.at("javascripts/jquery.raty.min.js")"></script>
+
+    <!--[if lt IE 9]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <script id="movie-tpl" type="text/x-jquery-tmpl">
+	<div class="movie" id="${id}">
+	    <img src="http://localhost/entrtnte/images/${img}" class="cover" />
+	    <div class="info">
+		<h5 class="title">${name}</h5>
+		<h6 class="director">Dir. ${director}</h6>
+		<h6 class="country">${country} <span class="year">${year}</span></h6>
+		<div class="rate"></div>
+	    </div>
+	</div>
+    </script>
+
+    <script type="text/javascript">
+	$(function(){
+	    $.fn.raty.defaults.path = '@routes.Assets.at("images/icons")';
+	    $(".movie .rate").raty({half: true}).find("img").tooltip({container: "body"});
+	    var $columns = $(".movies").children();
+	    var nColumns = $columns.length;
+	    var $movieTpl = $("#movie-tpl");
+	    var working = false;
+
+	    loadMore();
+
+	    $(window).scroll(function(){
+
+		if ($(window).scrollTop() >= $(document).height() - $(window).height() - 100 ){
+		    loadMore();
+		}
+	    });
+
+
+	    function loadMore(){
+            console.log($columns);
+
+        jsRoutes.controllers.MovieController.load(3).ajax({
+		    url: "movies/load/unseen/10",
+		    type: "post",
+		    beforeSend: function (xhr) {
+			if(working) {
+			    return false;
+			}
+			working = true;
+		    }
+		}).done(function (data) {
+		    if(data && (data instanceof Array)){
+			$.each(data, function(i, val){
+			    var $movie = $movieTpl.tmpl(val).appendTo($columns.get(i % nColumns));
+			    $(".rate", $movie).raty(
+				{
+				    half: true
+				    ,click: function(score, evt) {
+
+					var $movie = $(this).parents(".movie");
+
+                    //lo agregué oy para la puntuacion
+                    jsRoutes.controllers.MovieController.rate($movie.attr("id"), score).ajax({
+                        success: function(data) {
+                            console.log("exito");
+                        }
+                    });
+
+					$("#movie-mask-ok").clone().removeAttr("id").appendTo($movie).fadeIn("slow", function(){
+					    $(evt.currentTarget).tooltip("destroy");
+					    $movie.fadeOut("slow", function() { $(this).remove() });
+					});
+
+				    }
+				}
+			    )
+			    .find("img").tooltip();
+			});
+		    }
+		    working = false;
+		});
+	    }
+	});
+    </script>
+
+}
+@*</body>*@
+@*</html>*@

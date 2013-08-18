@@ -1,0 +1,72 @@
+body {
+    background: #e3e3e3 url('../images/bg/debut_light.png') repeat;
+    padding: 20px 0 40px 0;
+    color: #444;
+}
+.movie {
+    background-color: white;
+    /*	    height: 350px;*/
+    /*	    overflow: hidden;*/
+    -webkit-border-radius: 3px; -moz-border-radius: 3px; -ms-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px;
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33); -moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33); box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33);
+    margin-top: 20px;
+    position: relative;
+}
+.movie .cover {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    width: 160px;
+    height: 230px;
+}
+.movie .info {
+    padding: 5px 6px 7px;
+}
+.movie .info .title, .movie .info .director{
+    font-family: 'Roboto', sans-serif;
+    line-height: normal;
+    margin: 0 0 5px 0;
+}
+.movie .info .year{
+    margin-left: 15px;
+}
+.movie .info .director, .movie .info .country{
+    font-family: 'Roboto', sans-serif;
+    font-weight: normal;
+    line-height: normal;
+    color: #737373;
+    margin: 0;
+}
+.movie .info .country{
+    font-size: 10px;
+}
+.movie .info .rate{
+    margin: 5px 0 0 0;
+}
+.movies {
+    margin-left: -30px;
+}
+.span3 {
+    width: 160px;
+}
+.tooltip.in {
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+#loading {
+    margin-top: 15px;
+}
+.movie .mask-ok {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    margin-left: -30px;
+    box-sizing: border-box;
+    width: 60px;
+    height: 60px;
+    background: black url("../images/icons/check-white.png") no-repeat center center;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    padding: 10px;
+    border-radius: 3px;
+}
