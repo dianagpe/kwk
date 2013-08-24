@@ -11,6 +11,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import securesocial.core.java.SecureSocial;
 import views.html.movieEdit;
+import views.html.search;
 import views.html.temporal;
 
 import java.util.List;
@@ -24,10 +25,14 @@ public class MovieController extends Controller{
     }
 
     //@SecureSocial.SecuredAction
-    public static Result find(){
+    public static Result search(){
         Form<Search> searchForm = Form.form(Search.class).bindFromRequest();
         session("search",searchForm.get().q);
-        return redirect(routes.MovieController.movies(session("set")));
+
+        searchForm = searchForm.fill(new Search(session("search")));
+
+        return ok(search.render(new IdentityUser(), searchForm));
+        //return redirect(routes.MovieController.movies(session("set")));
     }
 
     //@SecureSocial.SecuredAction
@@ -67,14 +72,13 @@ public class MovieController extends Controller{
 
     @BodyParser.Of(BodyParser.Json.class)
     //@SecureSocial.SecuredAction(ajaxCall = true)
-    public static Result topRated(){
-
-        List<Movie> topRated = Movie.topRated();
+    public static Result topRated(Integer visibleItems){
+        List<Movie> topRated = Movie.topRated(visibleItems * 3);
         return ok(Json.toJson(topRated));
     }
 
-    public static Result bestRated(){
-        List<Movie> bestRated = Movie.bestRated();
+    public static Result bestRated(Integer visibleItems){
+        List<Movie> bestRated = Movie.bestRated(visibleItems * 3);
         return ok(Json.toJson(bestRated));
     }
 

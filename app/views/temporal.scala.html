@@ -1,6 +1,10 @@
 @(temporal :List[Movie])
 
-@main("Login") {
+@import tags.platillita
+
+@main2("Login") {
+
+
 
 
     <table class="table">
@@ -11,7 +15,7 @@
             </td>
             <td>
                 <ul>
-                    <li><strong>Id:</strong> @movie.id</li>
+                    <li><strong>Id:</strong> @platillita(movie)</li>
                     <li><strong>Nombre Ingles: </strong> @movie.name</li>
                     <li><strong>Nombre Espanol: </strong> @movie.nameEs</li>
                     <li><strong>Anio: </strong>@movie.year</li>
@@ -24,5 +28,8 @@
         }
 
     </table>
+
+
+
 
 }

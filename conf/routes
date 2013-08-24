@@ -8,11 +8,13 @@ GET         /                                 controllers.Application.index
 GET         /logout_                          controllers.Application.logout
 
 GET         /movies                           controllers.MovieController.movies(s: String ?= null)
-POST        /movies/find                      controllers.MovieController.find
-#POST         /movies                          controllers.MovieController.movies(set: String ?= "all")
+GET         /movies/top/:n                       controllers.MovieController.topRated(n:Integer)
+GET         /movies/best/:n                      controllers.MovieController.bestRated(n:Integer)
+
+POST        /movies/search                      controllers.MovieController.search
 GET         /movies/load/:offset              controllers.MovieController.load(offset: Integer)
+
 GET         /movies/recommendations           controllers.MovieController.recommendations
-GET         /movies/mostRated                 controllers.MovieController.top
 GET         /movies/:id/rate/:rating          controllers.MovieController.rate(id: Integer, rating: Float)
 #GET        /movies/list         controllers.MovieController.list
 
@@ -41,8 +43,6 @@ GET         /not-authorized                   securesocial.controllers.ProviderC
 
 #Estos los agregué yo para que sea mas rapido actualizar
 GET         /movies/temporal/:offset          controllers.MovieController.temporal(offset :Integer)
-GET         /movies/top                       controllers.MovieController.topRated
-GET         /movies/best                      controllers.MovieController.bestRated
 GET         /movie/edit/:id                   controllers.MovieController.editMovie(id : Integer)
 POST        /movie/set                        controllers.MovieController.setMovie
 

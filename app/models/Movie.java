@@ -204,7 +204,7 @@ public class Movie {
         return String.valueOf(this.id);
     }
 
-    public static List<Movie> topRated(){
+    public static List<Movie> topRated(Integer visibleItems){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -241,7 +241,7 @@ public class Movie {
         return movies;
     }
 
-    public static List<Movie> bestRated(){
+    public static List<Movie> bestRated(Integer visibleItems){
 
         Connection connection = null;
         PreparedStatement stmt = null;
