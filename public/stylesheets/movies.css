@@ -1,23 +1,37 @@
 body {
     background: #e3e3e3 url('../images/bg/debut_light.png') repeat;
-    padding: 20px 0 40px 0;
+    padding: 50px 0 40px 0;
     color: #444;
 }
+
+ul.nav li.dropdown:hover ul.dropdown-menu{
+    display: block;
+}
+.navbar .dropdown-menu {
+    margin-top: 0px;
+}
+
 .movie {
+    width: 170px;
     background-color: white;
-    /*	    height: 350px;*/
-    /*	    overflow: hidden;*/
+    height: 324px;
+    overflow: hidden;
     -webkit-border-radius: 3px; -moz-border-radius: 3px; -ms-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px;
     -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33); -moz-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.33); box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33);
     margin-top: 20px;
     position: relative;
 }
+.movie.x {
+    margin-left: 0;
+    margin-right: 30px;
+}
 .movie .cover {
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border-bottom: 1px solid rgba(0,0,0,0.1);
-    width: 160px;
+    width: 170px;
     height: 230px;
+
 }
 .movie .info {
     padding: 5px 6px 7px;
@@ -26,6 +40,9 @@ body {
     font-family: 'Roboto', sans-serif;
     line-height: normal;
     margin: 0 0 5px 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .movie .info .year{
     margin-left: 15px;
@@ -46,9 +63,55 @@ body {
 .movies {
     margin-left: -30px;
 }
-.span3 {
-    width: 160px;
+.movies-ctr .movie {
+    float: left;
+    margin: 0 15px;
 }
+.movies-ctr .carousel-inner {
+    padding: 0 0 2px 1px;
+}
+.movies-ctr .movie:first-child {
+    margin: 0 14px 0 0;
+}
+.movies-ctr .movie:last-child {
+    margin: 0 0 0 14px;
+}
+
+.carousel .arrow.left {
+    background-position: -38px 0;
+    left: 0;
+}
+.carousel .arrow.right {
+    background-position: 0 0;
+    right: 0;
+}
+.carousel .arrow.left:hover {
+    background-position: -38px -62px;
+}
+.carousel .arrow.right:hover {
+    background-position: 0 -62px;
+}
+.carousel .arrow {
+    position: absolute;
+    width: 38px;
+    height: 62px;
+    top: 40%;
+    background-image: url("../images/tools/f_flechas.png");
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+.carousel .arrow {
+    opacity: 0;
+    filter: alpha(opacity=0);
+    transition: opacity .5s ease-out;
+    -webkit-transition: opacity .5s ease-out;
+
+}
+.carousel:hover .arrow {
+    opacity: .9;
+    filter: alpha(opacity=90);
+}
+
 .tooltip.in {
     opacity: 0.8;
     filter: alpha(opacity=80);
@@ -69,4 +132,41 @@ body {
     filter: alpha(opacity=60);
     padding: 10px;
     border-radius: 3px;
+}
+@media (min-width: 768px) and (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
+    .container {
+        width: 740px;
+    }
+    .movies {
+        margin-left: -20px;
+    }
+    .movies-ctr .movie {
+        margin: 0 10px;
+    }
+    .movies-ctr .movie:first-child {
+        margin: 0 9px 0 0;
+    }
+    .movies-ctr .movie:last-child {
+        margin: 0 0 0 9px;
+    }
+}
+@media (min-width: 980px) and (max-width: 1199px) {
+    .container {
+        width: 930px;
+    }
+    .movies {
+        margin-left: -20px;
+    }
+    .movies-ctr .movie {
+        margin: 0 10px;
+    }
+    .movies-ctr .movie:first-child {
+        margin: 0 9px 0 0;
+    }
+    .movies-ctr .movie:last-child {
+        margin: 0 0 0 9px;
+    }
 }

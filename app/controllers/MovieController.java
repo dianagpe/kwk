@@ -51,7 +51,7 @@ public class MovieController extends Controller{
         user.id = 1;
 
         Movie.Set set = Movie.Set.getById(session("set"));
-        return ok(Json.toJson(Movie.list(set, user.id, 0, 300, session("search"),  1)));
+        return ok(Json.toJson(Movie.list(set, user.id, 0, 12, session("search"),  1)));
     }
 
     //@BodyParser.Of(BodyParser.Json.class)
