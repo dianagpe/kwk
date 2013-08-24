@@ -204,7 +204,7 @@ public class Movie {
         return String.valueOf(this.id);
     }
 
-    public static List<Movie> topRated(Integer visibleItems){
+    public static List<Movie> topRated(Integer nItems){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -219,7 +219,8 @@ public class Movie {
                     " inner join pelicula p" +
                     " on pp.pelicula_id = p.pelicula_id" +
                     " group by pp.pelicula_id" +
-                    " order by n desc");
+                    " order by n desc limit ? offset 0");
+            stmt.setInt(1, nItems);
             rs = stmt.executeQuery();
 
             while(rs.next()){
@@ -241,7 +242,7 @@ public class Movie {
         return movies;
     }
 
-    public static List<Movie> bestRated(Integer visibleItems){
+    public static List<Movie> bestRated(Integer nItems){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -258,7 +259,8 @@ public class Movie {
                     " on pp.pelicula_id = p.pelicula_id" +
                     " group by p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es" +
                     " order by suma desc" +
-                    " limit 20 offset 0");
+                    " limit ? offset 0");
+            stmt.setInt(1, nItems);
             rs = stmt.executeQuery();
 
             while(rs.next()){

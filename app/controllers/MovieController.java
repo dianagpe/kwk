@@ -36,17 +36,17 @@ public class MovieController extends Controller{
     }
 
     //@SecureSocial.SecuredAction
-    public static Result movies(String set){
+    public static Result movies(Integer nItems){
 
         //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
         IdentityUser user = new IdentityUser();
         user.id = 1;
 
-        session("set", Movie.Set.getById(set).id);
+        //session("set", Movie.Set.getById(set).id);
         Form<Search> searchForm = Form.form(Search.class).bindFromRequest();
         searchForm = searchForm.fill(new Search(session("search")));
 
-        return ok(views.html.movies2.render(new IdentityUser(), searchForm));
+        return ok(views.html.movies2.render(new IdentityUser(), searchForm, Movie.topRated(nItems * 3), Movie.topRated(nItems * 3)));
     }
 
     @BodyParser.Of(BodyParser.Json.class)

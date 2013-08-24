@@ -7,7 +7,7 @@ GET         /                                 controllers.Application.index
 #POST        /login                            controllers.Application.authenticate
 GET         /logout_                          controllers.Application.logout
 
-GET         /movies                           controllers.MovieController.movies(s: String ?= null)
+GET         /movies                           controllers.MovieController.movies(n:Integer ?= 5)
 GET         /movies/top/:n                       controllers.MovieController.topRated(n:Integer)
 GET         /movies/best/:n                      controllers.MovieController.bestRated(n:Integer)
 
