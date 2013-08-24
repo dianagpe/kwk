@@ -1,0 +1,11 @@
+@(movie: models.Movie)
+
+<div class="movie span-m" id="@movie.id">
+    <img src="http://localhost/entrtnte/images/${@movie.img}" class="cover" />
+    <div class="info">
+        <h5 class="title">@movie.name</h5>
+        <h6 class="director">Dir. @movie.director</h6>
+        <h6 class="country">@movie.country <span class="year">@movie.year</span></h6>
+        <div class="rate"></div>
+    </div>
+</div>

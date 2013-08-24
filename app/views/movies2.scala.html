@@ -1,3 +1,4 @@
+@import tags.movie
 @(user: IdentityUser, form: Form[Search], top: List[Movie], best: List[Movie])
 
 @main("Hey there, buddy!") {
@@ -44,13 +45,24 @@
     </div>
 
     <div class="container">
-        <h3>En cartelera</h3>
+        <h3>Las más vistas</h3>
         <div class="movies-ctr clearfix">
             <div id="top-carousel" class="carousel slide">
                 <div class="carousel-inner"> </div>
 
                 <a class="arrow left" href="#top-carousel" data-slide="prev"> </a>
                 <a class="arrow right" href="#top-carousel" data-slide="next"> </a>
+            </div>
+        </div>
+        <h3>Las mejor puntuadas</h3>
+        <div class="movies-ctr clearfix">
+            <div id="best-carousel" class="carousel slide">
+                <div class="carousel-inner">
+
+                </div>
+
+                <a class="arrow left" href="#best-carousel" data-slide="prev"> </a>
+                <a class="arrow right" href="#best-carousel" data-slide="next"> </a>
             </div>
         </div>
 
@@ -92,8 +104,8 @@
             "wide": 6
         }
 
-        buildCarousel("#top-carousel", "top");
-        loadMore();
+       // buildCarousel("#top-carousel", "top");
+       // loadMore();
 
 
 	    $win.scroll(function(){
