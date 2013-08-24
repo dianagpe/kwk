@@ -10,6 +10,8 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import securesocial.core.java.SecureSocial;
+import views.html.movieEdit;
+import views.html.temporal;
 
 import java.util.List;
 import java.util.Map;
@@ -54,16 +56,39 @@ public class MovieController extends Controller{
         return ok(Json.toJson(Movie.list(set, user.id, 0, 12, session("search"),  1)));
     }
 
+    public static Result temporal(Integer offset){
+
+        IdentityUser user = new IdentityUser();
+        user.id = 1;
+
+        Movie.Set set = Movie.Set.getById(session("set"));
+        return ok(temporal.render(Movie.list(set, user.id, 0, 300, session("search"), 1)));
+    }
+
+    @BodyParser.Of(BodyParser.Json.class)
+    //@SecureSocial.SecuredAction(ajaxCall = true)
+    public static Result topRated(){
+
+        List<Movie> topRated = Movie.topRated();
+        return ok(Json.toJson(topRated));
+    }
+
+    public static Result bestRated(){
+        List<Movie> bestRated = Movie.bestRated();
+        return ok(Json.toJson(bestRated));
+    }
+
     //@BodyParser.Of(BodyParser.Json.class)
     public static Result recommendations(){
 
-        String userId = session("userId");
-        Map<Long, User> users = null;
+        //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
+        IdentityUser user = new IdentityUser();
+        user.id = 1;
+        Map<Integer, IdentityUser> users = null;
         List<Movie> movies = null;
 
         try{
-            User user = new User();
-            user.id = Long.parseLong(userId);
+
             users = User.similarity(user);
             movies = Movie.recommendations(user, users);
 
@@ -85,15 +110,21 @@ public class MovieController extends Controller{
         return ok("baby");
     }
 
-//    public static Result newMovie(){
-//        Form<Movie> filledForm = movieForm.bindFromRequest();
-//        if(filledForm.hasErrors()){
-//            return badRequest(views.html.movie.render(filledForm));
-//        } else {
-//            return redirect(routes.MovieController.movies());
-//        }
-//
-//
-//    }
+    public static Result editMovie(Integer id){
+
+        Form<Movie> movieForm = Form.form(Movie.class).bindFromRequest();
+        Movie movie = Movie.get(id);
+        movieForm = movieForm.fill(movie);
+
+        return ok(movieEdit.render(movieForm));
+    }
+
+    public static Result setMovie(){
+        Form<Movie> movieForm = Form.form(Movie.class).bindFromRequest();
+
+        Movie movie = movieForm.get();
+
+        return ok();
+    }
 
 }

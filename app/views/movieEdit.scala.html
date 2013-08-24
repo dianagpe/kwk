@@ -1,0 +1,57 @@
+@(form :Form[Movie])
+
+@main(" "){
+    @helper.form(action = routes.MovieController.setMovie) {
+
+        <form class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="inputEmail">Id</label>
+                <div class="controls">
+                    <input type="text" name="id" value="@form("id").value"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Nombre Espanol</label>
+                <div class="controls">
+                    <input type="text" name="nameEs" value="@form("nameEs").value"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Nombre Ingles</label>
+                <div class="controls">
+                    <input type="text" name="name" value="@form("name").value"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Director</label>
+                <div class="controls">
+                    <input type="text" name="director" value="@form("director").value"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Anio</label>
+                <div class="controls">
+                    <input type="text" name="year" value="@form("year").value"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Reparto</label>
+                <div class="controls">
+                    <input type="text" name="cast" value="@form("cast").value"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Estreno dd-mm-yyyy</label>
+                <div class="controls">
+                    <input type="text" name="releaseDate" value="@form("releaseDate").value()"/>
+                </div>
+            </div>
+
+            <input type="submit" name="enviar"/>
+
+    </form>
+    }
+}

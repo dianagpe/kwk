@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.List;
 
 public class IdentityUser implements Identity {
 
@@ -23,6 +24,9 @@ public class IdentityUser implements Identity {
     public Option<OAuth1Info> oAuth1Info;
     public Option<OAuth2Info> oAuth2Info;
     public Option<PasswordInfo> passwordInfo;
+
+    public List<Movie> movies;
+    public Double affinity;
 
     @Override
     public IdentityId identityId() {

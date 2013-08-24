@@ -12,11 +12,14 @@ public class Movie {
 
     public Integer id;
     public String name;
+    public String nameEs;
+    public String cast;
     public Integer year;
     public Double rating = 0.0;
     public String country;
     public String director;
     public String img ;//=  "http://lorempixel.com/160/230/people/";
+    public Date releaseDate;
 
     public static enum Set{
         ALL("all"), SEEN("seen"), UNSEEN("unseen");
@@ -74,7 +77,7 @@ public class Movie {
 //            extra =  ((set == Set.UNSEEN) ?" and " : " where ") + " anio = 2011 AND pais in ('Estados Unidos','México') ";
 //        }
 
-        query = "SELECT p.pelicula_id, p.guion, p.director, p.nombre_en, p.anio, p.pais, pp.puntuacion" +
+        query = "SELECT p.pelicula_id, p.guion, p.director, p.nombre_en, p.nombre_es, p.anio, p.pais, p.reparto, pp.puntuacion" +
                 " from pelicula p " + join +
                 " join pelicula_puntuacion pp" +
                 " on pp.pelicula_id = p.pelicula_id and pp.usuario_id = ? " + condition + match + //extra +
@@ -122,6 +125,8 @@ public class Movie {
                 movie.director = rs.getString("director");
                 movie.country = rs.getString("pais");
                 movie.rating = rs.getDouble("puntuacion");
+                movie.nameEs = rs.getString("nombre_es");
+                movie.cast = rs.getString("reparto");
                 movie.img = "img-"+movie.id+"-large.jpg.png";
             }
 
@@ -199,9 +204,84 @@ public class Movie {
         return String.valueOf(this.id);
     }
 
+    public static List<Movie> topRated(){
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        List<Movie> movies = new ArrayList<>();
+        Movie movie;
+
+        try{
+            connection = DB.getConnection();
+            stmt = connection.prepareStatement("select p.*, count(pp.pelicula_id) n from pelicula_puntuacion pp" +
+                    " inner join pelicula p" +
+                    " on pp.pelicula_id = p.pelicula_id" +
+                    " group by pp.pelicula_id" +
+                    " order by n desc");
+            rs = stmt.executeQuery();
+
+            while(rs.next()){
+                movies.add(movie = new Movie(rs.getInt("pelicula_id"), rs.getString("nombre_en"), rs.getInt("anio")));
+                movie.director = rs.getString("director");
+                movie.country = rs.getString("pais");
+                movie.img = "img-"+rs.getString("pelicula_id")+"-large.jpg.png";
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            }catch (Exception e){}
+        }
+        return movies;
+    }
+
+    public static List<Movie> bestRated(){
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        List<Movie> movies = new ArrayList<>();
+        Movie movie;
+
+        try{
+            connection = DB.getConnection();
+            stmt = connection.prepareStatement("select p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es, " +
+                    " sum(pp.puntuacion) suma from pelicula p" +
+                    " inner join pelicula_puntuacion pp" +
+                    " on pp.pelicula_id = p.pelicula_id" +
+                    " group by p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es" +
+                    " order by suma desc" +
+                    " limit 20 offset 0");
+            rs = stmt.executeQuery();
+
+            while(rs.next()){
+                movies.add(movie = new Movie(rs.getInt("pelicula_id"), rs.getString("nombre_en"), rs.getInt("anio")));
+                movie.director = rs.getString("director");
+                movie.country = rs.getString("pais");
+                movie.img = "img-"+rs.getString("pelicula_id")+"-large.jpg.png";
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            }catch (Exception e){}
+        }
+        return movies;
+    }
 
 
-    public static List<Movie> recommendations(User user, Map<Long, User> users){
+    public static List<Movie> recommendations(IdentityUser user, Map<Integer, IdentityUser> users){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -209,19 +289,12 @@ public class Movie {
 
         List<Movie> movies = new ArrayList<>();
 
-//        TreeSet<Movie> movies = new TreeSet<>(new Comparator<Movie>(){
-//            public int compare(Movie a, Movie b){
-//                return (int) (a.rating - b.rating);
-//            }
-//        });
-//
-//        Map<Integer, Movie> moviess = new HashMap<> ();
-
         try{
 
             Integer movieId = -1;
             Movie movie = new Movie();
-            User user1;
+            IdentityUser user1;
+            boolean more = true;
 
             connection = DB.getConnection();
             stmt = connection.prepareStatement("select pa.pelicula_id, pa.usuario_id, pa.puntuacion from pelicula_puntuacion pa" +
@@ -229,8 +302,8 @@ public class Movie {
                     " on pa.pelicula_id = pb.pelicula_id and pb.usuario_id = ?" +
                     " where pa.usuario_id <> ? and pb.usuario_id is null" +
                     " order by pelicula_id");
-            stmt.setLong(1, user.id);
-            stmt.setLong(2, user.id);
+            stmt.setInt(1, user.id);
+            stmt.setInt(2, user.id);
 
             rs = stmt.executeQuery();
             while(rs.next()){
@@ -239,9 +312,10 @@ public class Movie {
                     movie.id = movieId = rs.getInt("pelicula_id");
                     movie.img = "0";
                 }
-                if((user1 = users.get(rs.getLong("usuario_id"))) != null){
-                    movie.rating += Math.pow(user1.affinity * rs.getInt("puntuacion"),2);
-                    movie.img = String.valueOf(Double.parseDouble(movie.img) + (user1.affinity * rs.getInt("puntuacion")));
+                if((user1 = users.get(rs.getInt("usuario_id"))) != null){
+                    movie.rating += user1.affinity * (rs.getDouble("puntuacion")/5d);
+//                    movie.rating += Math.pow(user1.affinity * rs.getInt("puntuacion"),2);
+                    //movie.img = String.valueOf(Double.parseDouble(movie.img) + (user1.affinity * rs.getInt("puntuacion")));
                     System.out.println(rs.getString("pelicula_id")+" puntuacion: "+rs.getString("puntuacion")+ " afinity " + user1.affinity);
                 }
             }
@@ -250,25 +324,41 @@ public class Movie {
 
             Collections.sort( movies, new Comparator<Movie>(){
                 public int compare(Movie a, Movie b){
-                    return (int) (a.rating - b.rating);
+//                    System.out.println(a.rating + " " + b.rating + "  = "+ a.rating.compareTo(b.rating));
+                    return (a.rating.compareTo(b.rating))*-1;
                 }
             });
 
-//            TreeMap<Integer, Movie> movies2 = new TreeMap<>(new ValueComparator(moviess));
-//            movies2.descendingMap().
-
-            /*
-            * select p.* from pelicula p where p.pelicula_id in (100046, 108781, 106172)
-order by field(p.pelicula_id, '100046','106172', '108781');
-            * */
-
-
-            for(Movie m : movies){
-                System.out.println(m.id + "  " + m.rating+ "  normal "+m.img);
+            for(Movie m:movies){
+                System.out.println("  -->  "+m.id+"  rating "+m.rating);
             }
 
-            System.out.println(movies.toString());
+            String ids = movies.toString();
+            ids = ids.substring(1,ids.length()-2).replace(", ","', '");
 
+            System.out.println(ids);
+
+
+            stmt = connection.prepareStatement("select p.* from pelicula p where p.pelicula_id " +
+                    " in ('"+ids+"') order by field (p.pelicula_id, '"+ids+"')");
+            //stmt.setString(1, ids);
+            //stmt.setString(2, ids);
+            rs = stmt.executeQuery();
+
+            System.out.println(rs.getFetchSize());
+            if(rs.next())
+                for(Movie m : movies){
+                    if(m.id == rs.getInt("pelicula_id")) {
+                        m.director = rs.getString("director");
+                        m.country = rs.getString("pais");
+                        m.name = rs.getString("nombre_en");
+                        m.year = rs.getInt("anio");
+                        m.img = "img-"+m.id+"-large.jpg.png";
+                        more = rs.next();
+                        if(more == false)break;
+                    }
+
+                }
 
         }catch (Exception ex){
             ex.printStackTrace();
@@ -327,5 +417,100 @@ order by field(p.pelicula_id, '100046','106172', '108781');
         }
         return false;
     }
+
+    public static Movie get(Integer id){
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Movie movie = null;
+
+        try{
+            connection = DB.getConnection();
+            stmt = connection.prepareStatement("select pelicula_id, nombre_es, nombre_en, director, guion, musica, anio, pais, reparto, tipo" +
+                    " from pelicula where pelicula_id = ?");
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            while(rs.next()){
+                movie = new Movie();
+                movie.id = rs.getInt("pelicula_id");
+                movie.name = rs.getString("nombre_en");
+                movie.nameEs = rs.getString("nombre_es");
+                movie.director = rs.getString("director");
+                movie.year = rs.getInt("anio");
+                movie.country = rs.getString("pais");
+                movie.cast = rs.getString("reparto");
+                movie.releaseDate = new Date();
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            }catch (Exception e){}
+        }
+        return movie;
+    }
+
+
+//    public static void save(Movie movie){
+//
+//        Connection connection = null;
+//        PreparedStatement stmt = null;
+//        ResultSet rs = null;
+//
+//        String[] keys = {"pelicula_id"};
+//       // Integer userId = find(identity);
+//        IdentityUser user = null;
+//
+//        try{
+//            connection = DB.getConnection();
+//            stmt = connection.prepareStatement("insert into usuario (usuario_id, email, nombre, ultimo_acceso, password, oauth_proveedor, oauth_usuario)" +
+//                    " values (?, ?, ?, CURRENT_TIMESTAMP, null, ?, ?)" +
+//                    "  ON DUPLICATE KEY UPDATE ultimo_acceso = CURRENT_TIMESTAMP", keys);
+//
+//            if(userId!=null)
+//                stmt.setInt(1, userId);
+//            else {
+//                stmt.setNull(1, Types.INTEGER);
+//            }
+//            if(identity.email() != null)
+//                stmt.setString(2, identity.email().toString());
+//            else
+//                stmt.setNull(2, Types.VARCHAR);
+//
+//            stmt.setString(3, identity.fullName());
+//            stmt.setString(4, identity.identityId().providerId());
+//            stmt.setString(5, identity.identityId().userId());
+//            stmt.executeUpdate();
+//            rs = stmt.getGeneratedKeys();
+//
+//            if(rs.next()){
+//                user = new IdentityUser();
+//                user.identityId = identity.identityId();
+//                user.email = identity.email();
+//                user.fullName = identity.fullName();
+//                user.firstName = identity.firstName();
+//                user.lastName = identity.lastName();
+//                user.id = rs.getInt(1);
+//            }
+//
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                if (rs != null) rs.close();
+//                if (stmt != null) stmt.close();
+//                if (connection != null) connection.close();
+//            }catch (Exception e){}
+//        }
+//        return user;
+//
+//    }
+
 
 }
