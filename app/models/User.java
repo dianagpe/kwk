@@ -172,13 +172,13 @@ public class User {
         return users;
     }
 
-    public static Map<Long, Integer> totalItems(User user){
+    public static Map<Integer, Integer> totalItems(IdentityUser user){
 
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        Map<Long, Integer> uti = new HashMap<>();
+        Map<Integer, Integer> uti = new HashMap<>();
 
         try{
             connection = DB.getConnection();
@@ -190,7 +190,7 @@ public class User {
             rs = stmt.executeQuery();
 
             while(rs.next()){
-                uti.put(rs.getLong("usuario_id"), rs.getInt("total"));
+                uti.put(rs.getInt("usuario_id"), rs.getInt("total"));
             }
 
         }catch(Exception e){
@@ -205,16 +205,16 @@ public class User {
         return uti;
     }
 
-    public static Map<Long, User> similarity(User user){
+    public static Map<Integer, IdentityUser> similarity(IdentityUser user){
 
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        Map<Long, Integer> usersTotalItems = user.totalItems(user);
-        Map<Long, User> users = new HashMap<>();
+        Map<Integer, Integer> usersTotalItems = User.totalItems(user);
+        Map<Integer, IdentityUser> users = new HashMap<>();
 
-        User user1;
+        IdentityUser user1;
 
         try{
 
@@ -229,17 +229,22 @@ public class User {
                     " on pa.pelicula_id = pb.pelicula_id " +
                     " where pb.usuario_id = ? and pa.usuario_id <> ?" +
                     " group by pa.usuario_id");
-            stmt.setLong(1, user.id);
-            stmt.setLong(2, user.id);
+            stmt.setInt(1, user.id);
+            stmt.setInt(2, user.id);
             rs = stmt.executeQuery();
 
             while(rs.next()){
 
-                users.put(rs.getLong("usuario_id"), user1 = new User());
-                user1.id = rs.getLong("usuario_id");
+                users.put(rs.getInt("usuario_id"), user1 = new IdentityUser());
+                user1.id = rs.getInt("usuario_id");
                 commonItems = rs.getInt("items_comunes");
                 maxCommonItems = Math.min(usersTotalItems.get(user1.id),totalItems);
-                user1.affinity = ((double)commonItems/maxCommonItems) * (1 - Math.tan(Math.sqrt(rs.getDouble("sum_squares")/ commonItems)));
+
+                user1.affinity = ((double)commonItems/maxCommonItems) * (1 - Math.tanh(Math.sqrt(rs.getDouble("sum_squares")/ commonItems)));
+                System.out.println("common "+commonItems+" maxcommon ("+totalItems+", "+usersTotalItems.get(user1.id)+") "+
+                        Math.min(usersTotalItems.get(user1.id),totalItems)+ " suma cuadrados "+ rs.getDouble("sum_squares")+ "afinidad sin ponderar "+
+                        (1 - Math.tanh(Math.sqrt(rs.getDouble("sum_squares")/ commonItems))) + " afinidad ponderada "+ user1.affinity);
+
             }
 
         }catch(Exception e){

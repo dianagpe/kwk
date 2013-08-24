@@ -72,7 +72,7 @@
 	    <div class="info">
 		<h5 class="title">${name}</h5>
 		<h6 class="director">Dir. ${director}</h6>
-		<h6 class="country">${country} <span class="year">${year}</span></h6>
+		<h6 class="country">${country}${rating} <span class="year">${year}</span></h6>
 		<div class="rate"></div>
 	    </div>
 	</div>
@@ -100,7 +100,7 @@
 	    function loadMore(){
             console.log($columns);
 
-        jsRoutes.controllers.MovieController.load(3).ajax({
+        jsRoutes.controllers.MovieController.recommendations(3).ajax({
 		    url: "movies/load/unseen/10",
 		    type: "post",
 		    beforeSend: function (xhr) {
