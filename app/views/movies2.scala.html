@@ -1,5 +1,8 @@
 @(user: IdentityUser, form: Form[Search], top: List[Movie], best: List[Movie])
 
+@import tags.movie
+
+
 @main("Hey there, buddy!") {
 
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -25,7 +28,7 @@
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
-                        <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies(12)">Recomendaciones</a></li>
+                        <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies()">Recomendaciones</a></li>
                     </ul>
                     <form class="navbar-form pull-left" action="@routes.MovieController.search()" method="post">
                         <input class="span2" type="text" value="@form("q").value" placeholder="Buscar">
@@ -44,14 +47,17 @@
     </div>
 
     <div class="container">
-        <h3>En cartelera</h3>
-        <div class="movies-ctr clearfix">
-            <div id="top-carousel" class="carousel slide">
-                <div class="carousel-inner"> </div>
-
-                <a class="arrow left" href="#top-carousel" data-slide="prev"> </a>
-                <a class="arrow right" href="#top-carousel" data-slide="next"> </a>
-            </div>
+        <h3>Las más vistas</h3>
+        <div id="top-slider" class="movies-ctr clearfix">
+            @for(movie <- top) {
+                @tags.movie(movie)
+            }
+        </div>
+        <h3>Las mejor puntuadas</h3>
+        <div id="best-slider" class="movies-ctr clearfix">
+            @for(movie <- best) {
+                @tags.movie(movie)
+            }
         </div>
 
 
@@ -92,13 +98,37 @@
             "wide": 6
         }
 
-        buildCarousel("#top-carousel", "top");
-        loadMore();
+
+    $('#top-slider, #best-slider').bxSlider({
+        slideWidth: 170,
+        minSlides: 4,
+        maxSlides: 6,
+        easing: "linear",
+        slideMargin: 30
+    });
+
+     $(".rate").raty({
+        half: true,
+        click: function(score, evt) {
+                    var $movie = $(this).parents(".movie");
+
+                    jsRoutes.controllers.MovieController.rate($movie.attr("id"), score).ajax({
+                        success: function(data) {
+                                    $("#movie-mask-ok").clone().removeAttr("id").appendTo($movie).fadeIn("slow", function(){
+                                        $(evt.currentTarget).tooltip("destroy");
+                                        $movie.fadeOut("slow", function() { $(this).remove() });
+                                    });
+                                 }
+                    });
+               }
+     }).find("img").tooltip({container: "body"});
+
+      loadMore();
 
 
 	    $win.scroll(function(){
 		    if ($win.scrollTop() >= $(document).height() - $win.height() - 100 ){
-		        loadMore();
+		        //loadMore();
 		    }
 	    });
 
