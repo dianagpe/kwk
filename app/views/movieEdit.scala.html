@@ -3,55 +3,102 @@
 @main2(" "){
     @helper.form(action = routes.MovieController.setMovie) {
 
-        <form class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label" for="inputEmail">Id</label>
-                <div class="controls">
-                    <input type="text" name="id" value="@form("id").value"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Nombre Espanol</label>
-                <div class="controls">
-                    <input type="text" name="nameEs" value="@form("nameEs").value"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Nombre Ingles</label>
-                <div class="controls">
-                    <input type="text" name="name" value="@form("name").value"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Director</label>
-                <div class="controls">
-                    <input type="text" name="director" value="@form("director").value"/>
-                </div>
-            </div>
+        <table>
+            <tr>
+                <td>
+                    <img src="http://localhost/entrtnte/images/img-@form("id").value-large.jpg.png" width="200px" class="cover" />
 
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Anio</label>
-                <div class="controls">
-                    <input type="text" name="year" value="@form("year").value"/>
-                </div>
-            </div>
+                </td>
+                <td>
 
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Reparto</label>
-                <div class="controls">
-                    <input type="text" name="cast" value="@form("cast").value"/>
-                </div>
-            </div>
 
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Estreno dd-mm-yyyy</label>
-                <div class="controls">
-                    <input type="text" name="releaseDate" value="@form("releaseDate").value()"/>
-                </div>
-            </div>
 
-            <input type="submit" name="enviar"/>
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="inputEmail">Id</label>
+                            <div class="controls">
+                                <input type="text" name="id" value="@form("id").value"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Nombre Espanol</label>
+                            <div class="controls">
+                                <input type="text" name="nameEs" value="@form("nameEs").value"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Nombre Ingles</label>
+                            <div class="controls">
+                                <input type="text" name="name" value="@form("name").value"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Director</label>
+                            <div class="controls">
+                                <input type="text" name="director" value="@form("director").value"/>
+                            </div>
+                        </div>
 
-    </form>
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Anio</label>
+                            <div class="controls">
+                                <input type="text" name="year" value="@form("year").value"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Reparto</label>
+                            <div class="controls">
+                                <input type="text" name="cast" value="@form("cast").value"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Tipo</label>
+                            <div class="controls">
+                                <input type="text" name="type" value="@form("type").value"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Pais</label>
+                            <div class="controls">
+                                <input type="text" name="country" value="@form("country").value"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Estreno dd-mm-yyyy</label>
+                            <div class="controls">
+                                <input type="text" name="releaseDate" value="@form("releaseDate").value()"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">IMDB</label>
+                            <div class="controls">
+                                <input type="text" name="imdb" value="@form("imdb").value()"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputPassword">Generos</label>
+                            <div class="controls">
+                                <input type="text" name="genres" value="@form("genres").value()"/>
+                            </div>
+                        </div>
+
+                        <input type="submit" name="enviar"/>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+
+
     }
 }

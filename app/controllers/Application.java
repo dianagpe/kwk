@@ -19,7 +19,7 @@ public class Application extends Controller {
     public static Result index() {
         IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
         ///return ok(index.render(user));
-        return redirect(routes.MovieController.movies(session("set")));
+        return redirect(routes.MovieController.movies(5));
 
     }
 

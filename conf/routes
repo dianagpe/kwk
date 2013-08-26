@@ -42,7 +42,7 @@ POST        /authenticate/:provider           securesocial.controllers.ProviderC
 GET         /not-authorized                   securesocial.controllers.ProviderController.notAuthorized
 
 #Estos los agregué yo para que sea mas rapido actualizar
-GET         /movies/temporal/:offset          controllers.MovieController.temporal(offset :Integer)
+GET         /movies/temporal/:search          controllers.MovieController.temporal(search :String)
 GET         /movie/edit/:id                   controllers.MovieController.editMovie(id : Integer)
 POST        /movie/set                        controllers.MovieController.setMovie
 

@@ -61,13 +61,13 @@ public class MovieController extends Controller{
         return ok(Json.toJson(Movie.list(set, user.id, 0, 12, session("search"),  1)));
     }
 
-    public static Result temporal(Integer offset){
+    public static Result temporal(String search){
 
         IdentityUser user = new IdentityUser();
         user.id = 1;
 
         Movie.Set set = Movie.Set.getById(session("set"));
-        return ok(temporal.render(Movie.list(set, user.id, 0, 300, session("search"), 1)));
+        return ok(temporal.render(Movie.list(set, user.id, 0, 100, search, 1)));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -124,11 +124,16 @@ public class MovieController extends Controller{
     }
 
     public static Result setMovie(){
-        Form<Movie> movieForm = Form.form(Movie.class).bindFromRequest();
+        try{
+            Form<Movie> movieForm = Form.form(Movie.class).bindFromRequest();
+            Movie movie = movieForm.get();
+            Movie.save(movie);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
 
-        Movie movie = movieForm.get();
+        return redirect(routes.MovieController.temporal("google"));
 
-        return ok();
     }
 
 }
