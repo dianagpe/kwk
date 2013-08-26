@@ -65,51 +65,9 @@ ul.nav li.dropdown:hover ul.dropdown-menu{
 }
 .movies-ctr .movie {
     float: left;
-    margin: 0 15px;
-}
-.movies-ctr .carousel-inner {
-    padding: 0 0 2px 1px;
-}
-.movies-ctr .movie:first-child {
-    margin: 0 14px 0 0;
-}
-.movies-ctr .movie:last-child {
-    margin: 0 0 0 14px;
-}
-
-.carousel .arrow.left {
-    background-position: -38px 0;
-    left: 0;
-}
-.carousel .arrow.right {
-    background-position: 0 0;
-    right: 0;
-}
-.carousel .arrow.left:hover {
-    background-position: -38px -62px;
-}
-.carousel .arrow.right:hover {
-    background-position: 0 -62px;
-}
-.carousel .arrow {
-    position: absolute;
-    width: 38px;
-    height: 62px;
-    top: 40%;
-    background-image: url("../images/tools/f_flechas.png");
-    background-repeat: no-repeat;
-    background-color: transparent;
-}
-.carousel .arrow {
-    opacity: 0;
-    filter: alpha(opacity=0);
-    transition: opacity .5s ease-out;
-    -webkit-transition: opacity .5s ease-out;
-
-}
-.carousel:hover .arrow {
-    opacity: .9;
-    filter: alpha(opacity=90);
+    margin-top: 0;
+    margin-right: 30px;
+    margin-bottom: 3px;
 }
 
 .tooltip.in {
