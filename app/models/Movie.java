@@ -3,10 +3,9 @@ package models;
 
 import play.db.DB;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class Movie {
 
@@ -20,6 +19,9 @@ public class Movie {
     public String director;
     public String img ;//=  "http://lorempixel.com/160/230/people/";
     public Date releaseDate;
+    public String type;
+    public String imdb;
+    public String genres;
 
     public static enum Set{
         ALL("all"), SEEN("seen"), UNSEEN("unseen");
@@ -282,6 +284,43 @@ public class Movie {
         return movies;
     }
 
+    public static List<Movie> inTeathers(Integer nItems){
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        List<Movie> movies = new ArrayList<>();
+        Movie movie;
+
+        try{
+            connection = DB.getConnection();
+            stmt = connection.prepareStatement("SELECT p.* FROM pelicula p join pelicula_estreno pe on p.pelicula_id = pe.pelicula_id" +
+                    " where pe.pais = 'MX' and pe.fecha between curdate() - interval 15 day and curdate() + interval 1 day" +
+                    " order by pe.fecha" +
+                    " limit ? offset 0");
+            stmt.setInt(1, nItems);
+            rs = stmt.executeQuery();
+
+            while(rs.next()){
+                movies.add(movie = new Movie(rs.getInt("pelicula_id"), rs.getString("nombre_en"), rs.getInt("anio")));
+                movie.director = rs.getString("director");
+                movie.country = rs.getString("pais");
+                movie.img = "img-"+rs.getString("pelicula_id")+"-large.jpg.png";
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            }catch (Exception e){}
+        }
+        return movies;
+    }
+
 
     public static List<Movie> recommendations(IdentityUser user, Map<Integer, IdentityUser> users){
 
@@ -429,8 +468,9 @@ public class Movie {
 
         try{
             connection = DB.getConnection();
-            stmt = connection.prepareStatement("select pelicula_id, nombre_es, nombre_en, director, guion, musica, anio, pais, reparto, tipo" +
-                    " from pelicula where pelicula_id = ?");
+            stmt = connection.prepareStatement("select p.pelicula_id, p.generos, p.nombre_es, p.nombre_en, p.director, p.guion, p.musica, p.anio, p.pais, p.reparto, p.tipo, pe.fecha, p.imdb_id" +
+                    " FROM pelicula p" +
+                    " left join pelicula_estreno pe ON p.pelicula_id = pe.pelicula_id where p.pelicula_id = ?");
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
@@ -443,7 +483,10 @@ public class Movie {
                 movie.year = rs.getInt("anio");
                 movie.country = rs.getString("pais");
                 movie.cast = rs.getString("reparto");
-                movie.releaseDate = new Date();
+                movie.type = rs.getString("tipo");
+                movie.imdb = rs.getString("imdb_id");
+                movie.releaseDate = rs.getDate("fecha");
+                movie.genres = rs.getString("generos");
             }
 
         }catch(Exception e){
@@ -459,60 +502,53 @@ public class Movie {
     }
 
 
-//    public static void save(Movie movie){
-//
-//        Connection connection = null;
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//
-//        String[] keys = {"pelicula_id"};
-//       // Integer userId = find(identity);
-//        IdentityUser user = null;
-//
-//        try{
-//            connection = DB.getConnection();
-//            stmt = connection.prepareStatement("insert into usuario (usuario_id, email, nombre, ultimo_acceso, password, oauth_proveedor, oauth_usuario)" +
-//                    " values (?, ?, ?, CURRENT_TIMESTAMP, null, ?, ?)" +
-//                    "  ON DUPLICATE KEY UPDATE ultimo_acceso = CURRENT_TIMESTAMP", keys);
-//
-//            if(userId!=null)
-//                stmt.setInt(1, userId);
-//            else {
-//                stmt.setNull(1, Types.INTEGER);
-//            }
-//            if(identity.email() != null)
-//                stmt.setString(2, identity.email().toString());
-//            else
-//                stmt.setNull(2, Types.VARCHAR);
-//
-//            stmt.setString(3, identity.fullName());
-//            stmt.setString(4, identity.identityId().providerId());
-//            stmt.setString(5, identity.identityId().userId());
-//            stmt.executeUpdate();
-//            rs = stmt.getGeneratedKeys();
-//
-//            if(rs.next()){
-//                user = new IdentityUser();
-//                user.identityId = identity.identityId();
-//                user.email = identity.email();
-//                user.fullName = identity.fullName();
-//                user.firstName = identity.firstName();
-//                user.lastName = identity.lastName();
-//                user.id = rs.getInt(1);
-//            }
-//
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }finally {
-//            try{
-//                if (rs != null) rs.close();
-//                if (stmt != null) stmt.close();
-//                if (connection != null) connection.close();
-//            }catch (Exception e){}
-//        }
-//        return user;
-//
-//    }
+    public static void save(Movie movie){
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String[] keys = {"pelicula_id"};
+
+        //TODO Diana : Luego tienes que poner estos updates batch sale?
+
+        try{
+            connection = DB.getConnection();
+            stmt = connection.prepareStatement("update pelicula set nombre_es = ?, nombre_en = ?, director = ?, anio = ?, pais = ?, " +
+                    " reparto = ?, tipo = ?, imdb_id = ?, generos = ? where pelicula_id  = ?", keys);
+            stmt.setString(1, movie.nameEs);
+            stmt.setString(2, movie.name);
+            stmt.setString(3, movie.director);
+            stmt.setInt(4, movie.year);
+            stmt.setString(5, movie.country);
+            stmt.setString(6, movie.cast);
+            stmt.setString(7, movie.type);
+            stmt.setString(8, movie.imdb);
+            stmt.setString(9, movie.genres);
+            stmt.setInt(10, movie.id);
+
+
+            stmt.executeUpdate();
+            stmt.close();
+
+            stmt = connection.prepareStatement("insert into pelicula_estreno (pelicula_id, pais, fecha) " +
+                    "values (?, 'MX', ?) ON DUPLICATE KEY UPDATE fecha = ? ");
+            stmt.setInt(1, movie.id);
+            stmt.setDate(2, new java.sql.Date(movie.releaseDate.getTime()));
+            stmt.setDate(3, new java.sql.Date(movie.releaseDate.getTime()));
+            stmt.executeUpdate();
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (connection != null) connection.close();
+            }catch (Exception e){}
+        }
+
+    }
 
 
 }
