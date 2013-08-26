@@ -36,7 +36,7 @@ public class MovieController extends Controller{
     }
 
     //@SecureSocial.SecuredAction
-    public static Result movies(Integer nItems){
+    public static Result movies(){
 
         //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
         IdentityUser user = new IdentityUser();
@@ -46,7 +46,7 @@ public class MovieController extends Controller{
         Form<Search> searchForm = Form.form(Search.class).bindFromRequest();
         searchForm = searchForm.fill(new Search(session("search")));
 
-        return ok(views.html.movies2.render(new IdentityUser(), searchForm, Movie.topRated(nItems * 3), Movie.topRated(nItems * 3)));
+        return ok(views.html.movies.render(new IdentityUser(), searchForm, Movie.topRated(), Movie.topRated(), Movie.inTeathers()));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -68,18 +68,6 @@ public class MovieController extends Controller{
 
         Movie.Set set = Movie.Set.getById(session("set"));
         return ok(temporal.render(Movie.list(set, user.id, 0, 100, search, 1)));
-    }
-
-    @BodyParser.Of(BodyParser.Json.class)
-    //@SecureSocial.SecuredAction(ajaxCall = true)
-    public static Result topRated(Integer visibleItems){
-        List<Movie> topRated = Movie.topRated(visibleItems * 3);
-        return ok(Json.toJson(topRated));
-    }
-
-    public static Result bestRated(Integer visibleItems){
-        List<Movie> bestRated = Movie.bestRated(visibleItems * 3);
-        return ok(Json.toJson(bestRated));
     }
 
     //@BodyParser.Of(BodyParser.Json.class)

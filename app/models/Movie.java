@@ -22,6 +22,7 @@ public class Movie {
     public String type;
     public String imdb;
     public String genres;
+    private final static int MAX_ITEMS = 15;
 
     public static enum Set{
         ALL("all"), SEEN("seen"), UNSEEN("unseen");
@@ -206,7 +207,7 @@ public class Movie {
         return String.valueOf(this.id);
     }
 
-    public static List<Movie> topRated(Integer nItems){
+    public static List<Movie> topRated(){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -222,7 +223,7 @@ public class Movie {
                     " on pp.pelicula_id = p.pelicula_id" +
                     " group by pp.pelicula_id" +
                     " order by n desc limit ? offset 0");
-            stmt.setInt(1, nItems);
+            stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 
             while(rs.next()){
@@ -244,7 +245,7 @@ public class Movie {
         return movies;
     }
 
-    public static List<Movie> bestRated(Integer nItems){
+    public static List<Movie> bestRated(){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -262,7 +263,7 @@ public class Movie {
                     " group by p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es" +
                     " order by suma desc" +
                     " limit ? offset 0");
-            stmt.setInt(1, nItems);
+            stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 
             while(rs.next()){
@@ -284,7 +285,7 @@ public class Movie {
         return movies;
     }
 
-    public static List<Movie> inTeathers(Integer nItems){
+    public static List<Movie> inTeathers(){
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -299,7 +300,7 @@ public class Movie {
                     " where pe.pais = 'MX' and pe.fecha between curdate() - interval 15 day and curdate() + interval 1 day" +
                     " order by pe.fecha" +
                     " limit ? offset 0");
-            stmt.setInt(1, nItems);
+            stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 
             while(rs.next()){

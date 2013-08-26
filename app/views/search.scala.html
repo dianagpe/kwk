@@ -25,7 +25,7 @@
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
-                        <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies(12)">Recomendaciones</a></li>
+                        <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies()">Recomendaciones</a></li>
                     </ul>
                     <form class="navbar-form pull-left" action="@routes.MovieController.search()" method="post">
                         <input class="span2" type="text" value="@form("q").value" placeholder="Buscar">

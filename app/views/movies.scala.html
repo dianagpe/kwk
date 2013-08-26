@@ -1,4 +1,4 @@
-@(user: IdentityUser, form: Form[Search], top: List[Movie], best: List[Movie])
+@(user: IdentityUser, form: Form[Search], top: List[Movie], best: List[Movie], now: List[Movie])
 
 @import tags.movie
 
@@ -47,6 +47,12 @@
     </div>
 
     <div class="container">
+        <h3>En cartelera</h3>
+        <div id="now-slider" class="movies-ctr clearfix">
+        @for(movie <- now) {
+            @tags.movie(movie)
+        }
+        </div>
         <h3>Las más vistas</h3>
         <div id="top-slider" class="movies-ctr clearfix">
             @for(movie <- top) {
@@ -99,7 +105,7 @@
         }
 
 
-    $('#top-slider, #best-slider').bxSlider({
+    $('#top-slider, #best-slider, #now-slider').bxSlider({
         slideWidth: 170,
         minSlides: 4,
         maxSlides: 6,
@@ -123,7 +129,7 @@
                }
      }).find("img").tooltip({container: "body"});
 
-      loadMore();
+    //  loadMore();
 
 
 	    $win.scroll(function(){
