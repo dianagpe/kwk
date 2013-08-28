@@ -20,14 +20,9 @@
                             <ul class="dropdown-menu">
                                 <li><a href="#">Action</a></li>
                                 <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li class="nav-header">Nav header</li>
-                                <li><a href="#">Separated link</a></li>
-                                <li><a href="#">One more separated link</a></li>
                             </ul>
                         </li>
-                        <li @if(session().get("set") == "all"){class="active"}><a href="@routes.MovieController.movies()">Recomendaciones</a></li>
+                        <li><a href="@routes.MovieController.movies()">Recomendaciones</a></li>
                     </ul>
                     <form class="navbar-form pull-left" action="@routes.MovieController.search()" method="post">
                         <input class="span2" type="text" name="q" value="@form("q").value" placeholder="Buscar">
@@ -49,19 +44,19 @@
         <h3>En cartelera</h3>
         <div id="now-slider" class="movies-ctr clearfix">
         @for(movie <- now) {
-            @tags.movie(movie)
+            @tags.movie(movie, true)
         }
         </div>
         <h3>Las más vistas</h3>
         <div id="top-slider" class="movies-ctr clearfix">
             @for(movie <- top) {
-                @tags.movie(movie)
+                @tags.movie(movie, true)
             }
         </div>
         <h3>Las mejor puntuadas</h3>
         <div id="best-slider" class="movies-ctr clearfix">
             @for(movie <- best) {
-                @tags.movie(movie)
+                @tags.movie(movie, true)
             }
         </div>
 

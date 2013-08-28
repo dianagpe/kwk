@@ -34,7 +34,7 @@ public class MovieController extends Controller{
         List<Movie> movies =  Movie.list(Movie.Set.ALL, user.id, 0, ITEMS_LIMIT_DEFAULT, s.q, 1);
 
 //        return ok(search.render(user, searchForm, movies));
-        return ok(views.html.temporal.render(user, searchForm, movies));
+        return ok(views.html.search.render(user, searchForm, movies));
     }
 
     @SecureSocial.SecuredAction

@@ -9,9 +9,9 @@ GET         /logout_                          controllers.Application.logout
 
 GET         /movies                           controllers.MovieController.movies
 
-POST        /movies/search                      controllers.MovieController.search
-GET         /movies/search/:offset              controllers.MovieController.load(search: String?=null, offset: Integer)
-POST         /movies/search/:offset              controllers.MovieController.load(search: String?=null, offset: Integer)
+POST        /movies/search                    controllers.MovieController.search
+GET         /movies/search/:offset            controllers.MovieController.load(search: String, offset: Integer)
+POST         /movies/search/:offset              controllers.MovieController.load(search: String, offset: Integer)
 
 GET         /movies/recommendations           controllers.MovieController.recommendations
 GET         /movies/:id/rate/:rating          controllers.MovieController.rate(id: Integer, rating: Float)
