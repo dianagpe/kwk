@@ -64,12 +64,12 @@ public class MovieController extends Controller{
 //        return ok(temporal.render(Movie.list(set, user.id, 0, 100, search, 1)));
 //    }
 
-    //@BodyParser.Of(BodyParser.Json.class)
-    public static Result recommendations(){
+  //  @BodyParser.Of(BodyParser.Json.class)
+   // @SecureSocial.SecuredAction(ajaxCall = true)
+  @SecureSocial.SecuredAction
+  public static Result recommendations(){
 
-        //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
-        IdentityUser user = new IdentityUser();
-        user.id = 1;
+        IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
         Map<Integer, IdentityUser> users = null;
         List<Movie> movies = null;
 
@@ -81,8 +81,9 @@ public class MovieController extends Controller{
         }catch (Exception ex){
 
         }
+        return ok(views.html.temporal.render(user, Form.form(Search.class).bindFromRequest(), movies));
 
-        return ok(Json.toJson(movies));
+        // return ok(Json.toJson(movies));
     }
 
     @SecureSocial.SecuredAction(ajaxCall = true)

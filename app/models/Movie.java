@@ -371,7 +371,7 @@ public class Movie {
                     movie.rating += user1.affinity * (rs.getDouble("puntuacion")/5d);
 //                    movie.rating += Math.pow(user1.affinity * rs.getInt("puntuacion"),2);
                     //movie.img = String.valueOf(Double.parseDouble(movie.img) + (user1.affinity * rs.getInt("puntuacion")));
-                    System.out.println(rs.getString("pelicula_id")+" puntuacion: "+rs.getString("puntuacion")+ " afinity " + user1.affinity);
+                    //System.out.println(rs.getString("pelicula_id")+" puntuacion: "+rs.getString("puntuacion")+ " afinity " + user1.affinity);
                 }
             }
             rs.close();
@@ -384,14 +384,15 @@ public class Movie {
                 }
             });
 
-            for(Movie m:movies){
-                System.out.println("  -->  "+m.id+"  rating "+m.rating);
-            }
+//            for(Movie m:movies){
+//                System.out.println("  -->  "+m.id+"  rating "+m.rating);
+//            }
 
+            if(movies.size()>50)movies = movies.subList(0,50);
             String ids = movies.toString();
             ids = ids.substring(1,ids.length()-2).replace(", ","', '");
 
-            System.out.println(ids);
+//            System.out.println(ids);
 
 
             stmt = connection.prepareStatement("select p.* from pelicula p where p.pelicula_id " +
@@ -400,7 +401,7 @@ public class Movie {
             //stmt.setString(2, ids);
             rs = stmt.executeQuery();
 
-            System.out.println(rs.getFetchSize());
+//            System.out.println(rs.getFetchSize());
             if(rs.next())
                 for(Movie m : movies){
                     if(m.id == rs.getInt("pelicula_id")) {
