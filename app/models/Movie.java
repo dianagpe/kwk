@@ -3,9 +3,10 @@ package models;
 
 import play.db.DB;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
-import java.util.Date;
 
 public class Movie {
 
@@ -98,9 +99,11 @@ public class Movie {
                 if(word.length()>0)
                     s += " +" + word;
             }
+//            s += " "+ search;
             s += " \""+ search +"\"";
             search = s;
         }
+        System.out.println(search);
         return  search;
     }
 
@@ -218,11 +221,13 @@ public class Movie {
 
         try{
             connection = DB.getConnection();
-            stmt = connection.prepareStatement("select p.*, count(pp.pelicula_id) n from pelicula_puntuacion pp" +
+            stmt = connection.prepareStatement("select sq.*, pp.puntuacion from ("+
+                    " select p.*, count(pp.pelicula_id) n from pelicula_puntuacion pp" +
                     " inner join pelicula p" +
                     " on pp.pelicula_id = p.pelicula_id" +
                     " group by pp.pelicula_id" +
-                    " order by n desc limit ? offset 0");
+                    " order by n desc limit ? offset 0) sq" +
+                    " left join pelicula_puntuacion pp on pp.pelicula_id = sq.pelicula_id");
             stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 
@@ -231,6 +236,9 @@ public class Movie {
                 movie.director = rs.getString("director");
                 movie.country = rs.getString("pais");
                 movie.img = "img-"+rs.getString("pelicula_id")+"-large.jpg.png";
+                movie.rating = rs.getDouble("puntuacion");
+                movie.nameEs = rs.getString("nombre_es");
+                movie.cast = rs.getString("reparto");
             }
 
         }catch(Exception e){
@@ -256,13 +264,14 @@ public class Movie {
 
         try{
             connection = DB.getConnection();
-            stmt = connection.prepareStatement("select p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es, " +
+            stmt = connection.prepareStatement("select sq.*, pp.puntuacion from (" +
+                    " select p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es, " +
                     " sum(pp.puntuacion) suma from pelicula p" +
                     " inner join pelicula_puntuacion pp" +
                     " on pp.pelicula_id = p.pelicula_id" +
                     " group by p.pelicula_id, p.nombre_en, p.anio, p.pais, p.director, p.nombre_es" +
-                    " order by suma desc" +
-                    " limit ? offset 0");
+                    " order by suma desc limit ? offset 0) sq " +
+                    " left join pelicula_puntuacion pp on pp.pelicula_id = sq.pelicula_id");
             stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 
@@ -270,7 +279,10 @@ public class Movie {
                 movies.add(movie = new Movie(rs.getInt("pelicula_id"), rs.getString("nombre_en"), rs.getInt("anio")));
                 movie.director = rs.getString("director");
                 movie.country = rs.getString("pais");
-                movie.img = "img-"+rs.getString("pelicula_id")+"-large.jpg.png";
+                movie.rating = rs.getDouble("puntuacion");
+                movie.nameEs = rs.getString("nombre_es");
+                movie.cast = rs.getString("reparto");
+                movie.img = "img-"+movie.id+"-large.jpg.png";
             }
 
         }catch(Exception e){
@@ -296,10 +308,11 @@ public class Movie {
 
         try{
             connection = DB.getConnection();
-            stmt = connection.prepareStatement("SELECT p.* FROM pelicula p join pelicula_estreno pe on p.pelicula_id = pe.pelicula_id" +
-                    " where pe.pais = 'MX' and pe.fecha between curdate() - interval 15 day and curdate() + interval 1 day" +
-                    " order by pe.fecha" +
-                    " limit ? offset 0");
+            stmt = connection.prepareStatement("select sq.*, pp.puntuacion from (" +
+                    " SELECT p.*, pe.fecha FROM pelicula p join pelicula_estreno pe on p.pelicula_id = pe.pelicula_id" +
+                    " where pe.pais = 'MX' and pe.fecha between curdate() - interval 20 day and curdate() + interval 1 day" +
+                    " limit ? offset 0) sq" +
+                    " left join pelicula_puntuacion pp on pp.pelicula_id = sq.pelicula_id order by sq.fecha");
             stmt.setInt(1, Movie.MAX_ITEMS);
             rs = stmt.executeQuery();
 

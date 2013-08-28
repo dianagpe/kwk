@@ -11,8 +11,6 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import securesocial.core.java.SecureSocial;
 import views.html.movieEdit;
-import views.html.search;
-import views.html.temporal;
 
 import java.util.List;
 import java.util.Map;
@@ -24,51 +22,47 @@ public class MovieController extends Controller{
         return TODO;
     }
 
-    //@SecureSocial.SecuredAction
+    static final int ITEMS_LIMIT_DEFAULT = 30;
+
+    @SecureSocial.SecuredAction
     public static Result search(){
+
         Form<Search> searchForm = Form.form(Search.class).bindFromRequest();
-        session("search",searchForm.get().q);
+        Search s = searchForm.get();
 
-        searchForm = searchForm.fill(new Search(session("search")));
+        IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
+        List<Movie> movies =  Movie.list(Movie.Set.ALL, user.id, 0, ITEMS_LIMIT_DEFAULT, s.q, 1);
 
-        return ok(search.render(new IdentityUser(), searchForm));
-        //return redirect(routes.MovieController.movies(session("set")));
+//        return ok(search.render(user, searchForm, movies));
+        return ok(views.html.temporal.render(user, searchForm, movies));
     }
 
-    //@SecureSocial.SecuredAction
+    @SecureSocial.SecuredAction
     public static Result movies(){
 
-        //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
-        IdentityUser user = new IdentityUser();
-        user.id = 1;
-
-        //session("set", Movie.Set.getById(set).id);
-        Form<Search> searchForm = Form.form(Search.class).bindFromRequest();
-        searchForm = searchForm.fill(new Search(session("search")));
-
-        return ok(views.html.movies.render(new IdentityUser(), searchForm, Movie.topRated(), Movie.topRated(), Movie.inTeathers()));
+        IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
+        return ok(views.html.movies.render(new IdentityUser(), Form.form(Search.class).bindFromRequest(), Movie.topRated(), Movie.topRated(), Movie.inTeathers()));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
-    //@SecureSocial.SecuredAction(ajaxCall = true)
-    public static Result load(Integer offset){
+    @SecureSocial.SecuredAction(ajaxCall = true)
+    public static Result load(String search, Integer offset){
 
-        //IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
-        IdentityUser user = new IdentityUser();
-        user.id = 1;
-
-        Movie.Set set = Movie.Set.getById(session("set"));
-        return ok(Json.toJson(Movie.list(set, user.id, 0, 12, session("search"),  1)));
+        IdentityUser user = (IdentityUser) ctx().args.get(SecureSocial.USER_KEY);
+//        IdentityUser user = new IdentityUser();
+//        user.id = 1;
+//        Movie.Set set = Movie.Set.getById(session("set"));
+        return ok(Json.toJson(Movie.list(Movie.Set.ALL, user.id, offset, ITEMS_LIMIT_DEFAULT, search,  1)));
     }
 
-    public static Result temporal(String search){
-
-        IdentityUser user = new IdentityUser();
-        user.id = 1;
-
-        Movie.Set set = Movie.Set.getById(session("set"));
-        return ok(temporal.render(Movie.list(set, user.id, 0, 100, search, 1)));
-    }
+//    public static Result temporal(String search){
+//
+//        IdentityUser user = new IdentityUser();
+//        user.id = 1;
+//
+//        Movie.Set set = Movie.Set.getById(session("set"));
+//        return ok(temporal.render(Movie.list(set, user.id, 0, 100, search, 1)));
+//    }
 
     //@BodyParser.Of(BodyParser.Json.class)
     public static Result recommendations(){
@@ -120,7 +114,8 @@ public class MovieController extends Controller{
             ex.printStackTrace();
         }
 
-        return redirect(routes.MovieController.temporal("google"));
+        return redirect(routes.MovieController.movies());
+//        return redirect(routes.MovieController.temporal("google"));
 
     }
 

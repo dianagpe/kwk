@@ -1,4 +1,4 @@
-@(temporal :List[Movie])
+@(user: IdentityUser, form: Form[Search], movies:List[Movie])
 
 @import tags.platillita
 
@@ -8,7 +8,7 @@
 
 
     <table class="table">
-        @for(movie <- temporal) {
+        @for(movie <- movies) {
         <tr>
             <td width="100px">&nbsp;</td>
             <td width="120px"><a href="/movie/edit/@movie.id" ><img src="http://localhost/entrtnte/images/@movie.img" width="100px" class="cover" /> </a>
