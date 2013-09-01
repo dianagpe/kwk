@@ -1,0 +1,5 @@
+@(movies: List[Movie], inCarousel: Boolean = false)
+
+@for(movie <- movies) {
+    @tags.movie(movie, inCarousel)
+}

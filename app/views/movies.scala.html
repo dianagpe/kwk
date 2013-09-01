@@ -1,7 +1,5 @@
 @(user: IdentityUser, form: Form[Search], top: List[Movie], best: List[Movie], now: List[Movie])
 
-
-
     @main("Hey there, buddy!") {
 
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -12,11 +10,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="brand" href="#">inkling</a>
+                <a class="brand" href="/">inkling</a>
                 <div class="nav-collapse collapse">
                     <ul class="nav">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Peliculas <b class="caret"></b></a>
+                            <a href="/" class="dropdown-toggle" data-toggle="dropdown">Peliculas <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Action</a></li>
                                 <li><a href="#">Another action</a></li>
@@ -43,176 +41,31 @@
     <div class="container">
         <h3>En cartelera</h3>
         <div id="now-slider" class="movies-ctr clearfix">
-        @for(movie <- now) {
-            @tags.movie(movie, true)
-        }
+            @tags.movies(now, true);
         </div>
         <h3>Las más vistas</h3>
         <div id="top-slider" class="movies-ctr clearfix">
-            @for(movie <- top) {
-                @tags.movie(movie, true)
-            }
+            @tags.movies(top, true);
         </div>
         <h3>Las mejor puntuadas</h3>
         <div id="best-slider" class="movies-ctr clearfix">
-            @for(movie <- best) {
-                @tags.movie(movie, true)
-            }
+            @tags.movies(best, true);
         </div>
-
-
-	    <div id="movies" class="movies clearfix"> </div>
-	    <div id="loading" class="text-center"><img src="@routes.Assets.at("images/loading.gif")" /> </div>
     </div>
-    <div id="movie-mask-ok" class="mask-ok hide">
-
-    </div>
-
-    <script id="movie-tpl" type="text/x-jquery-tmpl">
-	<div class="movie span-m" id="${id}">
-	    <img src="http://localhost/entrtnte/images/${img}" class="cover" />
-	    <div class="info">
-		<h5 class="title">${name}</h5>
-		<h6 class="director">Dir. ${director}</h6>
-		<h6 class="country">${country} <span class="year">${year}</span></h6>
-		<div class="rate"></div>
-	    </div>
-	</div>
-    </script>
 
 }{
-
+    <script src="@routes.Assets.at("javascripts/app.js")" type="text/javascript"> </script>
     <script type="text/javascript">
 	$(function(){
-	    $.fn.raty.defaults.path = '@routes.Assets.at("images/icons")';
 
-        var $movies = $("#movies");
-	    var $movieTpl = $("#movie-tpl");
-        var $win = $(window);
+        $('#top-slider, #best-slider, #now-slider').bxSlider({
+            slideWidth: 170,
+            minSlides: 4,
+            maxSlides: 6,
+            easing: "linear",
+            slideMargin: 30
+        });
 
-        var working = false;
-        var currentScheme;
-        var props = {
-            "narrow": 4,
-            "medium": 5,
-            "wide": 6
-        }
-
-
-    $('#top-slider, #best-slider, #now-slider').bxSlider({
-        slideWidth: 170,
-        minSlides: 4,
-        maxSlides: 6,
-        easing: "linear",
-        slideMargin: 30
-    });
-
-     $(".rate").raty({
-        half: true,
-        click: function(score, evt) {
-                    var $movie = $(this).parents(".movie");
-
-                    jsRoutes.controllers.MovieController.rate($movie.attr("id"), score).ajax({
-                        success: function(data) {
-                                    $("#movie-mask-ok").clone().removeAttr("id").appendTo($movie).fadeIn("slow", function(){
-                                        $(evt.currentTarget).tooltip("destroy");
-                                        $movie.fadeOut("slow", function() { $(this).remove() });
-                                    });
-                                 }
-                    });
-               }
-     }).find("img").tooltip({container: "body"});
-
-    //  loadMore();
-
-
-	    $win.scroll(function(){
-		    if ($win.scrollTop() >= $(document).height() - $win.height() - 100 ){
-		        //loadMore();
-		    }
-	    });
-
-        $win.resize(function() {
-            var width = $win.width();
-            var newScheme;
-            if(width < 980) {
-                newScheme = "narrow";
-            } else if(width >= 980 && width < 1200) {
-                newScheme = "medium";
-            } else {
-                newScheme = "wide";
-            }
-            if(currentScheme != newScheme) {
-                currentScheme = newScheme;
-            }
-
-        }).resize();
-
-
-        function buildCarousel(container, which) {
-            var movies = [];
-
-            $.get("movies/" + which+"/4").done(function(data){
-                if(data && (data instanceof Array)){
-                    movies = data;
-                    var n = movies.length / props[currentScheme];
-                    var $i;
-                    var items = [];
-
-                    for(var i = 0; i < movies.length; i++) {
-                        if($i == undefined || i % props[currentScheme] == 0) {
-                            $i = $("<div/>", {"class": "item" + ((i == 0)?" active":"")  });
-                            items.push($i);
-                        }
-                        var $movie = $movieTpl.tmpl(movies[i]).appendTo($i);
-                        buildRater($movie);
-                    }
-                    $(container +" .carousel-inner" ).append(items);
-                    $(container).carousel();
-
-                }
-            });
-        }
-
-        function buildRater($movie){
-            $(".rate", $movie).raty({
-                half: true,
-                click: function(score, evt) {
-                            var $movie = $(this).parents(".movie");
-
-                            jsRoutes.controllers.MovieController.rate($movie.attr("id"), score).ajax({
-                                success: function(data) {
-                                            $("#movie-mask-ok").clone().removeAttr("id").appendTo($movie).fadeIn("slow", function(){
-                                                $(evt.currentTarget).tooltip("destroy");
-                                                $movie.fadeOut("slow", function() { $(this).remove() });
-                                            });
-                                         }
-                             });
-                       }
-             }).find("img").tooltip({container: "body"});
-        }
-
-	    function loadMore(){
-
-            jsRoutes.controllers.MovieController.load(3).ajax({
-		        type: "post",
-		        beforeSend: function (xhr) {
-			        if(working) {
-			            return false;
-			        }
-			        working = true;
-		        }
-		    }).done(function (data) {
-		        if(data && (data instanceof Array)){
-
-                    $.each(data, function(i, val){
-                        var $movie = $movieTpl.tmpl(val).appendTo($movies);
-                        buildRater($movie);
-                    });
-		        }
-		        working = false;
-		    });
-	    }
 	});
     </script>
 

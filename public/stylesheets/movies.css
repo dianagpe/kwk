@@ -1,7 +1,12 @@
 body {
     background: #e3e3e3 url('../images/bg/debut_light.png') repeat;
     padding: 50px 0 40px 0;
-    color: #444;
+    color: #555;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Roboto', sans-serif;
+    color: #555;
 }
 
 ul.nav li.dropdown:hover ul.dropdown-menu{
@@ -91,6 +96,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu{
     filter: alpha(opacity=60);
     padding: 10px;
     border-radius: 3px;
+}
+.opa20 {
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
 }
 @media (min-width: 768px) and (max-width: 979px) {
     body {

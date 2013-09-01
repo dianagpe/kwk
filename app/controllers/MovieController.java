@@ -44,7 +44,6 @@ public class MovieController extends Controller{
         return ok(views.html.movies.render(new IdentityUser(), Form.form(Search.class).bindFromRequest(), Movie.topRated(), Movie.topRated(), Movie.inTeathers()));
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
     @SecureSocial.SecuredAction(ajaxCall = true)
     public static Result load(String search, Integer offset){
 
@@ -52,7 +51,7 @@ public class MovieController extends Controller{
 //        IdentityUser user = new IdentityUser();
 //        user.id = 1;
 //        Movie.Set set = Movie.Set.getById(session("set"));
-        return ok(Json.toJson(Movie.list(Movie.Set.ALL, user.id, offset, ITEMS_LIMIT_DEFAULT, search,  1)));
+        return ok(views.html.tags.movies.render(Movie.list(Movie.Set.ALL, user.id, offset, ITEMS_LIMIT_DEFAULT, search,  1), false));
     }
 
 //    public static Result temporal(String search){
